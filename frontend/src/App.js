@@ -9,7 +9,20 @@ function App() {
 
     const [users, setUsers] = useState([]);
     const [newUser, setNewUser] = useState({pk: "", username: "", password: ""});
+
+    const [person, setPerson] = useState({login: "", password: ""});
     const [selectedUser, setSelectedUser] = useState({pk: "", username: "", password: ""});
+
+    const [loginValue, setLoginValue] = useState('');
+    const [passValue, setPassValue] = useState('');
+
+      const onPersonChange = e => {
+        const {name, value} = e.target;
+        setPerson((prevPerson) => ({
+            ...prevPerson,
+            [name]: value,
+        }));
+    };
 
     const onUserChange = e => {
         const {name, value} = e.target;
@@ -25,6 +38,16 @@ function App() {
             ...prevNote,
             [name]: value
         }));
+    }
+
+    const logInUser = () => {
+        axios.post(API_URL + "login", {"username": person.login, "password": person.password})
+        .then(function(response){
+            alert("Sukces");
+        })
+        .catch(function(error){
+            alert(`Nie udalo sie zrobic posta do ${API_URL + "login"}`);
+        })
     }
 
     const onUserSelect = e => {
@@ -79,6 +102,23 @@ function App() {
     return (
         <div>
             <h1>Notes App</h1>
+            <div>
+                <input
+                    type="text"
+                    placeholder="login"
+                    name="login"
+                    value={person.login}
+                    onChange={(e) => onPersonChange(e)}
+                />
+                <input
+                    type="password"
+                    placeholder="password"
+                    name="password"
+                    value={person.password}
+                    onChange={(e) => onPersonChange(e)}
+                />
+                <button onClick={logInUser}>Log in</button>
+            </div>
             <div>
                 <input
                     type="text"

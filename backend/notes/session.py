@@ -1,7 +1,7 @@
 class Session(object):
     def get_username(self, request):
-        userName = request.session.get('username', None)
-        return userName
+        username = request.session.get('username', None)
+        return username
 
     def get_password(self, request):
         password = request.session.get('password', None)
