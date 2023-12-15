@@ -9,6 +9,7 @@ from .serializers import NoteSerializer, UserSerializer
 from .models import Note, User
 
 from .session import Session
+session = Session()
 
 class NoteView(generics.ListAPIView):
     queryset = Note.objects.all()
@@ -44,11 +45,8 @@ class LoginView(APIView):
         password = request.data['password']
         try:
             user = User.objects.get(username=username, password=password)
-            if not User.DoesNotExist:
-                Session.set_user_id(user.pk)
-                Session.set_username(user.username)
-                Session.set_password(user.password)
-                return Response({'message': 'User found!','sessionID':Session.get_session_id}, status=status.HTTP_200_OK)
+            session.add_user(user.username)
+            return Response({'message': 'User found!','sessionID':session.session[0]}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': 'User "'+username+'" with password "'+password+'" not found'}, status=status.HTTP_200_OK)
     
