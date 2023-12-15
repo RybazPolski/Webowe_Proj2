@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from .serializers import NoteSerializer, UserSerializer
 from .models import Note, User
 
+from .session import Session
 
 class NoteView(generics.ListAPIView):
     queryset = Note.objects.all()
@@ -39,11 +40,15 @@ class CreateUserView(generics.CreateAPIView):
 
 class LoginView(APIView):
     def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
+        username = request.data['username']
+        password = request.data['password']
         try:
             user = User.objects.get(username=username, password=password)
-            return Response({'message': 'User found!'}, status=status.HTTP_200_OK)
+            if not User.DoesNotExist:
+                Session.set_user_id(user.pk)
+                Session.set_username(user.username)
+                Session.set_password(user.password)
+                return Response({'message': 'User found!','sessionID':Session.get_session_id}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
-            return Response({'error': 'User not found'})
+            return Response({'error': 'User not found'}, status=status.HTTP_401_UNAUTHORIZED)
     
